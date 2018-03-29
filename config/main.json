@@ -16,11 +16,13 @@
 				
 			],
 			"devtools" : false,
+			"slowMo" : 250,
 			"__executablePath" : "C:\\Users\\azbn\\AppData\\Local\\Yandex\\YandexBrowser\\Application\\browser.exe"
 		},
 		"path" : {
 			"screenshots" : "data/screenshots",
-			"traces" : "data/traces"
+			"traces" : "data/traces",
+			"inject_scripts" : "data/inject_scripts"
 		},
 		"viewport" : {
 			"width" : 1366,
