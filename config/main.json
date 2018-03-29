@@ -1,13 +1,4 @@
 {
-	"chrome" : {
-		"port" : 17003,
-		"enableExtensions" : true,
-		"flags" : [
-			"--headless",
-			"--disable-gpu",
-			"--fromSurface"
-		]
-	},
 	"puppeteer" : {
 		"launch" : {
 			"headless" : false,
@@ -17,20 +8,40 @@
 			],
 			"devtools" : false,
 			"slowMo" : 250,
-			"__executablePath" : "C:\\Users\\azbn\\AppData\\Local\\Yandex\\YandexBrowser\\Application\\browser.exe"
+			"__executablePath" : "C:\\Users\\azbn\\AppData\\Local\\Yandex\\YandexBrowser\\Application\\browser.exe",
+			"__userDataDir" : ""
 		},
 		"path" : {
 			"screenshots" : "data/screenshots",
 			"traces" : "data/traces",
-			"inject_scripts" : "data/inject_scripts"
+			"inject_scripts" : "data/inject_scripts",
+			"scenarios" : "data/scenarios"
 		},
+		"make_screenshots" : {
+			"png" : true,
+			"pdf" : true
+		},
+		"user_agent" : "test browser",
 		"viewport" : {
 			"width" : 1366,
 			"height" : 768,
-			"deviceScaleFactor" : 1,
+			"__deviceScaleFactor" : 1,
 			"isMobile" : false,
 			"hasTouch" : false,
 			"isLandscape" : true
+		},
+		"includes" : {
+			"styles" : {
+				
+			},
+			"scripts" : {
+				"jquery" : {
+					"url" : "https://yastatic.net/jquery/3.2.1/jquery.min.js"
+				},
+				"jquery_console_log" : {
+					"path" : "data/inject_scripts/test/jquery_console_log.js"
+				}
+			}
 		}
 	}
 }
