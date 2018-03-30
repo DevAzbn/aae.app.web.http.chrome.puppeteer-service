@@ -116,7 +116,10 @@ module.exports = async function(browser, page, azbn, argv) {
 				return aae__getXPathTo(el.parentNode) + '/' + el.tagName.toLowerCase() + (sames.length > 1 ? '['+([].indexOf.call(sames, el)+1)+']' : '')
 			}
 			
-			//document.body.scrollIntoView();
+			//document.body.scrollIntoView({
+			//	block : 'start',
+			//	behavior : 'smooth',
+			//});
 			
 			document.addEventListener(type, function(event){
 				//window.aae__onclick(aae__getXPathTo(event.target));
