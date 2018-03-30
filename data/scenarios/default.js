@@ -98,7 +98,7 @@ module.exports = async function(browser, page, azbn, argv) {
 		*/
 	});
 	
-	/*
+	
 	await page.exposeFunction('aae__onclick', function(o) {
 		console.log(o);
 	});
@@ -106,33 +106,26 @@ module.exports = async function(browser, page, azbn, argv) {
 	function __page__setListener(type) {
 		return page.evaluateOnNewDocument(function(type) {
 			
-			function aae__getXPathTo(element) {
-				if (element.id !== '')
-					return 'id("' + element.id + '")';
-				if (element === document.body)
-					return element.tagName;
-				
-				var ix = 0;
-				var siblings = element.parentNode.childNodes;
-				for (var i = 0; i < siblings.length; i++) {
-					var sibling = siblings[i];
-					if (sibling === element)
-						return aae__getXPathTo(element.parentNode) + '/' + element.tagName + '['+(ix+1)+']';
-					if (sibling.nodeType === 1 && sibling.tagName === element.tagName)
-						ix++;
-				}
+			function aae__getXPathTo(el) {
+				if (typeof el == "string") return document.evaluate(el, document, null, 0, null)
+				if (!el || el.nodeType != 1) return ''
+				if (el.id) return "//*[@id='" + el.id + "']"
+				var sames = [].filter.call(el.parentNode.children, function (x) { return x.tagName == el.tagName })
+				return aae__getXPathTo(el.parentNode) + '/' + el.tagName.toLowerCase() + (sames.length > 1 ? '['+([].indexOf.call(sames, el)+1)+']' : '')
 			}
 			
+			//document.body.scrollIntoView();
+			
 			document.addEventListener(type, function(event){
-				window.aae__onclick(aae__getXPathTo(event.target));
-				//console.log(event.target.innerHTML);
+				//window.aae__onclick(aae__getXPathTo(event.target));
+				console.log(aae__getXPathTo(event.target));
 			}, false);
 			
 		}, type);
 	}
 	
 	await __page__setListener('click');
-	*/
+	
 	
 	await page.setRequestInterception(true);
 	
@@ -158,7 +151,7 @@ module.exports = async function(browser, page, azbn, argv) {
 	}
 	
 	
-	/*
+	
 	await page.waitFor(5000);
 	const result = await page.evaluate(function(xp) {
 		
@@ -182,10 +175,10 @@ module.exports = async function(browser, page, azbn, argv) {
 		aae__eventFire(el, 'click');
 		
 		return xp;
-	}, '/html/body/nav/div/div/div/div[2]/div/div/div/div[4]/button'.toLowerCase());
+	}, '/html/body/div[2]/div[1]/div/div/div/div/div/ul/li[4]/a'.toLowerCase());
 	
 	console.log(result); // prints "56"
-	*/
+	
 	
 	
 	/*
