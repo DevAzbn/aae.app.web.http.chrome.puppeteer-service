@@ -18,16 +18,18 @@ if(!argv.sc || argv.sc == '') {
 	argv.sc = 'default';
 }
 
+azbn.setMdl('bconfig', require('./config/scenarios/' + argv.sc));
+
 const puppeteer = require('puppeteer');
 
 (async function(){
 	
-	const browser = await puppeteer.launch(azbn.mdl('config').puppeteer.launch);
+	const browser = await puppeteer.launch(azbn.mdl('bconfig').puppeteer.launch);
 	const page = await browser.newPage();
 	
-	await page.setUserAgent(azbn.mdl('config').puppeteer.user_agent);
-	await page.setViewport(azbn.mdl('config').puppeteer.viewport);
+	await page.setUserAgent(azbn.mdl('bconfig').puppeteer.user_agent);
+	await page.setViewport(azbn.mdl('bconfig').puppeteer.viewport);
 	
-	await (require('./' + azbn.mdl('config').puppeteer.path.scenarios + '/' + argv.sc + '.js'))(puppeteer, browser, page, azbn);
+	await (require('./' + azbn.mdl('bconfig').puppeteer.path.scenarios + '/' + argv.sc + '.js'))(browser, page, azbn, argv);
 	
 })();

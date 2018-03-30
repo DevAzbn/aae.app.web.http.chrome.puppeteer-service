@@ -1,17 +1,17 @@
 'use strict';
 
-module.exports = async function(puppeteer, browser, page, azbn) {
+module.exports = async function(browser, page, azbn, argv) {
 	
 	//https://github.com/checkly/puppeteer-examples/
 	
-	/*
-	await page.tracing.start({
-		path : azbn.mdl('config').puppeteer.path.traces + '/trace.json',
-		categories: [
-			'devtools.timeline',
-		],
-	});
-	*/
+	if(azbn.mdl('bconfig').puppeteer.debug.save_trace) {
+		await page.tracing.start({
+			path : azbn.mdl('bconfig').puppeteer.path.traces + '/trace.json',
+			categories: [
+				'devtools.timeline',
+			],
+		});
+	}
 	
 	/*
 	const cookie = {
@@ -26,89 +26,209 @@ module.exports = async function(puppeteer, browser, page, azbn) {
 	await page.setCookie(cookie);
 	*/
 	
-	//await page.setRequestInterception(true);
-	
 	page.on('console', function(msg){
 		if(msg.args.length) {
 			for(var i = 0; i < msg.args.length; i++) {
 				var o = msg.args[i];
-				console.log('puppeteer log:', o._remoteObject.value);
+				console.log('Page.Console', ':', o._remoteObject.value);
 			}
 		}
 	});
 	
 	page.on('dialog', async function(dialog){
-		сonsole.log(dialog.message());
+		сonsole.log('Page.Dialog', ':', dialog.message());
 		//dialog.accept([promptText])
 		await dialog.dismiss();
 		//await browser.close();
 	});
 	
 	page.on('pageerror', function(_err) {
-		//console.log(_req.url);
+		/*
+		сonsole.log('Page.Error', ':', _err);
+		*/
 	});
 	
 	page.on('request', function(_req) {
-		//console.log(_req.url());
+		
+		let _u = _req.url();
+		let is_bad = false;
+		let _res = [
+			'https://mc.yandex.ru',
+			'https://www.google-analytics.com',
+			'https://www.googletagmanager.com',
+			//'top-fwz1.mail.ru',
+			'https://vk.com/rtrg',
+			'https://www.facebook.com/tr',
+			'https://connect.facebook.net',
+		];
+		let _rex = new RegExp('(' + _res.join('|') + ')','ig');
+		if(_rex.test(_u)) {
+			
+			console.log('Page.Blocked', ':', _u);
+			_req.abort();
+			
+			/*
+			_req.respond({
+				status: 404,
+				contentType: 'text/plain',
+				body: '010'
+			});
+			*/
+			
+		} else {
+			
+			_req.continue();
+			
+		}
+		
 		/*
-		_req.respond({
-			status: 404,
-			contentType: 'text/plain',
-			body: 'Not Found!'
+		if (request.resourceType() === 'image')
+			request.abort();
+		else
+			request.continue();
+		*/
+		
+	});
+	
+	page.on('response', function(_res) {
+		/*
+		_res.text().then(function(resp){
+			console.log('Page.Response', ':', resp);
 		});
 		*/
 	});
 	
-	page.on('response', function(_res) {
-		//console.log(_res.text());
+	/*
+	await page.exposeFunction('aae__onclick', function(o) {
+		console.log(o);
 	});
 	
+	function __page__setListener(type) {
+		return page.evaluateOnNewDocument(function(type) {
+			
+			function aae__getXPathTo(element) {
+				if (element.id!=='')
+					return 'id("'+element.id+'")';
+				if (element===document.body)
+					return element.tagName;
+				
+				var ix= 0;
+				var siblings= element.parentNode.childNodes;
+				for (var i= 0; i<siblings.length; i++) {
+					var sibling= siblings[i];
+					if (sibling===element)
+						return aae__getXPathTo(element.parentNode)+'/'+element.tagName+'['+(ix+1)+']';
+					if (sibling.nodeType===1 && sibling.tagName===element.tagName)
+						ix++;
+				}
+			}
+			
+			document.addEventListener(type, function(event){
+				window.aae__onclick(aae__getXPathTo(event.target));
+				//console.log(event.target.innerHTML);
+			}, false);
+			
+		}, type);
+	}
+	
+	await __page__setListener('click');
+	*/
+	
+	await page.setRequestInterception(true);
+	
 	//https://ooooooooo.ru/search/?text=url:www.ooooooooo.ru/*&lr=10&clid=2092371&p=1&numdoc=50
-	await page.goto('http://azbn.ru/', {
-		//waitUntil : 'domcontentloaded',
+	await page.goto('http://orel-print.ru/', {
+		waitUntil : 'domcontentloaded',
 	});
+	
+	console.log('Page.DOMContentLoaded', ':', azbn.now());
 	
 	await page.waitFor(128);
 	//await page.waitForNavigation()
 	//await page.waitForSelector('h4.cart-items-header')
 	
-	if(azbn.mdl('config').puppeteer.includes.scripts) {
+	if(azbn.mdl('bconfig').puppeteer.includes.scripts) {
 		
-		for(var i in azbn.mdl('config').puppeteer.includes.scripts) {
+		for(var i in azbn.mdl('bconfig').puppeteer.includes.scripts) {
 			
-			await page.mainFrame().addScriptTag(azbn.mdl('config').puppeteer.includes.scripts[i]);
+			await page.mainFrame().addScriptTag(azbn.mdl('bconfig').puppeteer.includes.scripts[i]);
 			
 		}
 		
 	}
 	
+	
+	
 	/*
+	
+	
 	await page.type('input#text', 'Just adding a title', {
 		delay : 100,
 	});
+	
+	
 	await page.click('button.add-to-cart-btn.addToCart');
+	
+	
+	// Wait for suggest overlay to appear and click "show all results".
+	const allResultsSelector = '.devsite-suggest-all-results';
+	await page.waitForSelector(allResultsSelector);
+	await page.click(allResultsSelector);
+	
+	// Wait for the results page to load and display the results.
+	const resultsSelector = '.gsc-results .gsc-thumbnail-inside a.gs-title';
+	await page.waitForSelector(resultsSelector);
+	
+	// Extract the results from the page.
+	const links = await page.evaluate(resultsSelector => {
+		const anchors = Array.from(document.querySelectorAll(resultsSelector));
+		return anchors.map(anchor => {
+			const title = anchor.textContent.split('|')[0].trim();
+			return `${title} - ${anchor.href}`;
+		});
+	}, resultsSelector);
+	console.log(links.join('\n'));
+	
+	
+	// Get the "viewport" of the page, as reported by the page.
+	const dimensions = await page.evaluate(() => {
+		return {
+			width: document.documentElement.clientWidth,
+			height: document.documentElement.clientHeight,
+			deviceScaleFactor: window.devicePixelRatio
+		};
+	});
+	console.log('Dimensions:', dimensions);
+	
+	
 	*/
 	
-	if(azbn.mdl('config').puppeteer.make_screenshots.png) {
+	if(azbn.mdl('bconfig').puppeteer.make_screenshots.png) {
 		await page.screenshot({
-			path : azbn.mdl('config').puppeteer.path.screenshots + '/default.png',
+			path : azbn.mdl('bconfig').puppeteer.path.screenshots + '/default.png',
 			fullPage : true,
 		});
 	}
 	
-	if(azbn.mdl('config').puppeteer.make_screenshots.pdf && azbn.mdl('config').puppeteer.launch.headless) {
+	if(azbn.mdl('bconfig').puppeteer.make_screenshots.pdf && azbn.mdl('bconfig').puppeteer.launch.headless) {
 		//await page.emulateMedia('screen');
 		await page.pdf({
-			path : azbn.mdl('config').puppeteer.path.screenshots + '/default.pdf',
-			width : azbn.mdl('config').puppeteer.viewport.width,
+			path : azbn.mdl('bconfig').puppeteer.path.screenshots + '/default.pdf',
+			width : azbn.mdl('bconfig').puppeteer.viewport.width,
 			//format : 'A4',
 		});
 	}
 	
 	
 	//page.removeListener('request', logRequest);
-	//await page.tracing.stop();
-	await browser.close();
+	
+	if(azbn.mdl('bconfig').puppeteer.debug.save_trace) {
+		await page.tracing.stop();
+	}
+	
+	if(azbn.mdl('bconfig').puppeteer.browser.closeOnFinish) {
+		await browser.close();
+	}
 	
 	return null;
 	
