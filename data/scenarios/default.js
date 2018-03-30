@@ -36,9 +36,9 @@ module.exports = async function(browser, page, azbn, argv) {
 	});
 	
 	page.on('dialog', async function(dialog){
-		сonsole.log('Page.Dialog', ':', dialog.message());
+		//сonsole.log('Page.Dialog', ':', dialog.message());
 		//dialog.accept([promptText])
-		await dialog.dismiss();
+		//await dialog.dismiss();
 		//await browser.close();
 	});
 	
@@ -107,18 +107,18 @@ module.exports = async function(browser, page, azbn, argv) {
 		return page.evaluateOnNewDocument(function(type) {
 			
 			function aae__getXPathTo(element) {
-				if (element.id!=='')
-					return 'id("'+element.id+'")';
-				if (element===document.body)
+				if (element.id !== '')
+					return 'id("' + element.id + '")';
+				if (element === document.body)
 					return element.tagName;
 				
-				var ix= 0;
-				var siblings= element.parentNode.childNodes;
-				for (var i= 0; i<siblings.length; i++) {
-					var sibling= siblings[i];
-					if (sibling===element)
-						return aae__getXPathTo(element.parentNode)+'/'+element.tagName+'['+(ix+1)+']';
-					if (sibling.nodeType===1 && sibling.tagName===element.tagName)
+				var ix = 0;
+				var siblings = element.parentNode.childNodes;
+				for (var i = 0; i < siblings.length; i++) {
+					var sibling = siblings[i];
+					if (sibling === element)
+						return aae__getXPathTo(element.parentNode) + '/' + element.tagName + '['+(ix+1)+']';
+					if (sibling.nodeType === 1 && sibling.tagName === element.tagName)
 						ix++;
 				}
 			}
@@ -137,7 +137,7 @@ module.exports = async function(browser, page, azbn, argv) {
 	await page.setRequestInterception(true);
 	
 	//https://ooooooooo.ru/search/?text=url:www.ooooooooo.ru/*&lr=10&clid=2092371&p=1&numdoc=50
-	await page.goto('http://orel-print.ru/', {
+	await page.goto('http://azbn.ru/', {
 		waitUntil : 'domcontentloaded',
 	});
 	
@@ -151,12 +151,41 @@ module.exports = async function(browser, page, azbn, argv) {
 		
 		for(var i in azbn.mdl('bconfig').puppeteer.includes.scripts) {
 			
-			await page.mainFrame().addScriptTag(azbn.mdl('bconfig').puppeteer.includes.scripts[i]);
+			//await page.mainFrame().addScriptTag(azbn.mdl('bconfig').puppeteer.includes.scripts[i]);
 			
 		}
 		
 	}
 	
+	
+	/*
+	await page.waitFor(5000);
+	const result = await page.evaluate(function(xp) {
+		
+		var aae__eventFire = function(el, etype){
+			if(el) {
+				if (el.fireEvent) {
+					el.fireEvent('on' + etype);
+				} else {
+					var evObj = document.createEvent('Events');
+					evObj.initEvent(etype, true, false);
+					el.dispatchEvent(evObj);
+				}
+			}
+		}
+		
+		var aae__byXPath = function(xpathToExecute){
+			return document.evaluate(xpathToExecute, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+		}
+		
+		var el = aae__byXPath(xp);
+		aae__eventFire(el, 'click');
+		
+		return xp;
+	}, '/html/body/nav/div/div/div/div[2]/div/div/div/div[4]/button'.toLowerCase());
+	
+	console.log(result); // prints "56"
+	*/
 	
 	
 	/*
