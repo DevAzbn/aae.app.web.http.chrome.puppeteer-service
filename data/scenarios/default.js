@@ -13,6 +13,8 @@ module.exports = async function(browser, page, azbn, argv) {
 		});
 	}
 	
+	const page2 = await browser.newPage();
+	
 	/*
 	const cookie = {
 		name : 'login_email',
@@ -98,7 +100,7 @@ module.exports = async function(browser, page, azbn, argv) {
 		*/
 	});
 	
-	
+	/*
 	await page.exposeFunction('aae__onclick', function(o) {
 		console.log(o);
 	});
@@ -125,13 +127,16 @@ module.exports = async function(browser, page, azbn, argv) {
 	}
 	
 	await __page__setListener('click');
-	
+	*/
 	
 	await page.setRequestInterception(true);
 	
 	//https://ooooooooo.ru/search/?text=url:www.ooooooooo.ru/*&lr=10&clid=2092371&p=1&numdoc=50
 	await page.goto('http://azbn.ru/', {
+		//waitUntil : 'load',
 		waitUntil : 'domcontentloaded',
+		//waitUntil : 'networkidle0',
+		//waitUntil : 'networkidle2',
 	});
 	
 	console.log('Page.DOMContentLoaded', ':', azbn.now());
@@ -151,7 +156,7 @@ module.exports = async function(browser, page, azbn, argv) {
 	}
 	
 	
-	
+	/*
 	await page.waitFor(5000);
 	const result = await page.evaluate(function(xp) {
 		
@@ -177,11 +182,46 @@ module.exports = async function(browser, page, azbn, argv) {
 		return xp;
 	}, '/html/body/div[2]/div[1]/div/div/div/div/div/ul/li[4]/a'.toLowerCase());
 	
-	console.log(result); // prints "56"
-	
+	console.log(result);
+	*/
 	
 	
 	/*
+	
+	
+	const stories = await page.evaluate(function() {
+		const anchors = Array.from(document.querySelectorAll('a.storylink'))
+		return anchors.map(anchor => anchor.textContent).slice(0, 10)
+	});
+	console.log(stories);
+	
+	
+	await page.hover('.playableTile__artwork')
+	
+	
+	await page.focus('trix-editor')
+	await page.keyboard.type('Just adding a title')
+	
+	
+	await page.keyboard.type('Hello World!');
+	await page.keyboard.press('ArrowLeft');
+
+	await page.keyboard.down('Shift');
+	for (let i = 0; i < ' World'.length; i++)
+		await page.keyboard.press('ArrowLeft');
+	await page.keyboard.up('Shift');
+
+	await page.keyboard.press('Backspace');
+	// Result text will end up saying 'Hello!'
+
+	await page.keyboard.down('Shift');
+	await page.keyboard.press('KeyA');
+	await page.keyboard.up('Shift');
+	
+	
+	await page.mouse.click(132, 103, {
+		button: 'left'
+	})
 	
 	
 	await page.type('input#text', 'Just adding a title', {
