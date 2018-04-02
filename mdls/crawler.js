@@ -99,7 +99,7 @@ var _ = function(app, p) {
 				// /^2/.test('' + response.statusCode)
 				if(/^2/.test('' + response.statusCode)) {
 					
-					app.mdl('filemngr').saveContent(doc.href, body);
+					//app.mdl('filemngr').saveContent(doc.href, body);
 					app.mdl('filemngr').saveHeaders(doc.href, response.headers);
 					
 				}

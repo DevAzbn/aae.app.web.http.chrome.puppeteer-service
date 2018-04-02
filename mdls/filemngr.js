@@ -64,7 +64,7 @@ var _ = function(app, p) {
 				
 				var _ft = azbn.formattime();
 				
-				app.saveFile(_path + '/body.' + azbn.formattime() + '.html', body);
+				app.saveFile(_path + '/body.' + azbn.formattime() + '.html', content);
 				
 			}
 			
