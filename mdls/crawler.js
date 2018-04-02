@@ -40,7 +40,9 @@ var _ = function(app, p) {
 		
 		ctrl.__queue.queue.push(o);
 		
+		process.stdout.write('\x1B[2J\x1B[0f');
 		console.log('added', o.href);
+		//process.stdout.write('added ' + o.href);
 		
 		/*
 		if(ctrl.__queue.queue.length > 0) {
@@ -82,13 +84,19 @@ var _ = function(app, p) {
 				
 			}
 			
+		} else {
+			
+			process.exit();
+			
 		}
 		
 	});
 	
 	ctrl.on('findChildrenLinks', function(doc) {
 		
+		process.stdout.write('\x1B[2J\x1B[0f');
 		console.log('load', doc.href);
+		//process.stdout.write('load' + doc.href);
 		
 		rpn({
 			method : 'GET',
@@ -97,12 +105,6 @@ var _ = function(app, p) {
 			transform : function(body, response, resolveWithFullResponse) {
 				
 				// /^2/.test('' + response.statusCode)
-				if(/^2/.test('' + response.statusCode)) {
-					
-					//app.mdl('filemngr').saveContent(doc.href, body);
-					app.mdl('filemngr').saveHeaders(doc.href, response.headers);
-					
-				}
 				
 				if(/application\/json/.test(response.headers['content-type'])) {
 					
@@ -113,6 +115,13 @@ var _ = function(app, p) {
 				} else if(/text\/html/.test(response.headers['content-type'])) {
 					
 					//console.log('html');
+					
+					if(/^2/.test('' + response.statusCode)) {
+						
+						app.mdl('filemngr').saveContent(doc.href, body);
+						app.mdl('filemngr').saveHeaders(doc.href, response.headers);
+						
+					}
 					
 					return cheerio.load(body, {
 						normalizeWhitespace : true,
