@@ -39,3 +39,5 @@ app.mdl('crawler').emit('addDoc', {
 	source : '',
 	href : 'http://azbn.ru/',
 });
+
+app.mdl('crawler').emit('enableWork', true);

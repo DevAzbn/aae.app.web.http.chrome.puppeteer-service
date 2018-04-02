@@ -30,11 +30,7 @@ var _ = function(app, p) {
 	
 	ctrl.__queue.queue_status = {};
 	
-	ctrl.__queue.interval = setInterval(function(){
-		
-		ctrl.emit('nextDoc');
-		
-	}, azbn.mdl('config').crawler.interval);
+	ctrl.__queue.interval = null;
 	
 	ctrl.__queue.add = function(o) {
 		
@@ -51,6 +47,24 @@ var _ = function(app, p) {
 		*/
 		
 	}
+	
+	ctrl.on('enableWork', function(enable) {
+		
+		if(enable) {
+			
+			ctrl.__queue.interval = setInterval(function(){
+				
+				ctrl.emit('nextDoc');
+				
+			}, azbn.mdl('config').crawler.interval);
+			
+		} else {
+			
+			clearInterval(ctrl.__queue.interval);
+			
+		}
+		
+	});
 	
 	ctrl.on('addDoc', function(o) {
 		
