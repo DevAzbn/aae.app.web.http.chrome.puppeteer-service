@@ -97,6 +97,12 @@ var _ = function(app, p) {
 			transform : function(body, response, resolveWithFullResponse) {
 				
 				// /^2/.test('' + response.statusCode)
+				if(/^2/.test('' + response.statusCode)) {
+					
+					app.mdl('filemngr').saveContent(doc.href, body);
+					app.mdl('filemngr').saveHeaders(doc.href, response.headers);
+					
+				}
 				
 				if(/application\/json/.test(response.headers['content-type'])) {
 					
