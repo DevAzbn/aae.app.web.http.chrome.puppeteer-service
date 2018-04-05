@@ -1,0 +1,53 @@
+{
+	"puppeteer" : {
+		"debug" : {
+			"save_trace" : false
+		},
+		"launch" : {
+			"headless" : false,
+			"ignoreHTTPSErrors" : true,
+			"args" : [
+				
+			],
+			"devtools" : false,
+			"__slowMo" : 192,
+			"__executablePath" : "C:\\Users\\azbn\\AppData\\Local\\Yandex\\YandexBrowser\\Application\\browser.exe",
+			"__userDataDir" : ""
+		},
+		"browser" : {
+			"closeOnFinish" : true
+		},
+		"path" : {
+			"screenshots" : "data/screenshots",
+			"traces" : "data/traces",
+			"inject_scripts" : "data/inject_scripts",
+			"scenarios" : "data/scenarios"
+		},
+		"make_screenshots" : {
+			"png" : false,
+			"pdf" : false
+		},
+		"user_agent" : "Yadnex Browser",
+		"viewport" : {
+			"width" : 1366,
+			"height" : 768,
+			"deviceScaleFactor" : 1,
+			"isMobile" : false,
+			"hasTouch" : false,
+			"isLandscape" : true
+		},
+		"includes" : {
+			"styles" : {
+				
+			},
+			"scripts" : {
+				"jquery" : {
+					"url" : "https://yastatic.net/jquery/3.2.1/jquery.min.js"
+				},
+				"jquery_console_log" : {
+					"path" : "data/inject_scripts/test/jquery_console_log.js"
+				}
+			}
+		}
+	}
+}

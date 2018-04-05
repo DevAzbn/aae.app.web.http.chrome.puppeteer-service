@@ -13,7 +13,7 @@ module.exports = async function(browser, page, azbn, app, argv) {
 		});
 	}
 	
-	const page2 = await browser.newPage();
+	//const page2 = await browser.newPage();
 	
 	/*
 	const cookie = {
@@ -134,8 +134,7 @@ module.exports = async function(browser, page, azbn, app, argv) {
 	
 	await page.setRequestInterception(true);
 	
-	//https://ooooooooo.ru/search/?text=url:www.ooooooooo.ru/*&lr=10&clid=2092371&p=1&numdoc=50
-	await page.goto('http://azbn.ru/', {
+	await page.goto('https://yandex.ru/search/?text=' + argv.query + '&lr=10&clid=2092371&p=1&numdoc=50', {
 		//waitUntil : 'load',
 		waitUntil : 'domcontentloaded',
 		//waitUntil : 'networkidle0',
@@ -157,8 +156,20 @@ module.exports = async function(browser, page, azbn, app, argv) {
 		}
 		
 	}
+
+	const links = await page.evaluate(resultsSelector => {
+		let result = [];
+		const anchors = Array.from(document.querySelectorAll(resultsSelector));
+		for(let i = 0; i < anchors.length; i++) {
+			let href = anchors[i].getAttribute('href') || '';
+			if(href && href != '') {
+				result.push(anchors[i].getAttribute('href'))
+			}
+		}
+		return result;
+	}, '.serp-item .link.organic__url');
 	
-	
+	app.saveJSON('results/' + argv.sc + '_' + argv.query, links);
 	/*
 	await page.waitFor(5000);
 	const result = await page.evaluate(function(xp) {
@@ -270,7 +281,7 @@ module.exports = async function(browser, page, azbn, app, argv) {
 	
 	if(azbn.mdl('bconfig').puppeteer.make_screenshots.png) {
 		await page.screenshot({
-			path : azbn.mdl('bconfig').puppeteer.path.screenshots + '/default.png',
+			path : azbn.mdl('bconfig').puppeteer.path.screenshots + '/' + argv.sc + '.png',
 			fullPage : true,
 		});
 	}
@@ -278,7 +289,7 @@ module.exports = async function(browser, page, azbn, app, argv) {
 	if(azbn.mdl('bconfig').puppeteer.make_screenshots.pdf && azbn.mdl('bconfig').puppeteer.launch.headless) {
 		//await page.emulateMedia('screen');
 		await page.pdf({
-			path : azbn.mdl('bconfig').puppeteer.path.screenshots + '/default.pdf',
+			path : azbn.mdl('bconfig').puppeteer.path.screenshots + '/' + argv.sc + '.pdf',
 			width : azbn.mdl('bconfig').puppeteer.viewport.width,
 			//format : 'A4',
 		});

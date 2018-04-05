@@ -30,6 +30,6 @@ const puppeteer = require('puppeteer');
 	await page.setUserAgent(azbn.mdl('bconfig').puppeteer.user_agent);
 	await page.setViewport(azbn.mdl('bconfig').puppeteer.viewport);
 	
-	await (require('./' + azbn.mdl('bconfig').puppeteer.path.scenarios + '/' + argv.sc + '.js'))(browser, page, azbn, argv);
+	await (require('./' + azbn.mdl('bconfig').puppeteer.path.scenarios + '/' + argv.sc + '.js'))(browser, page, azbn, app, argv);
 	
 })();
