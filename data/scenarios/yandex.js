@@ -1,10 +1,28 @@
 'use strict';
 
-const chalk = require('chalk');
-
 module.exports = async function(browser, page, azbn, app, argv) {
 	
-	//https://github.com/checkly/puppeteer-examples/
+	const chalk = require('chalk');
+
+	const cookie = {
+		name : 'i',
+		value : 'sRFUWzEu2SBW5LCfF9U9GHqCcGOqjvKfXAh/rh3EsgGbPsTcr6sMhd4VuUHkm35X2UxP2EAOE7QJkFYFJPPPO2+OF0w=',
+		domain : '.yandex.ru',
+		url : 'https://yandex.ru/',
+		path : '/',
+		httpOnly : true,
+		secure : true,
+	}
+	await page.setCookie(cookie);
+
+	const rpn = require('request-promise-native').defaults({
+		headers : {
+			'User-Agent' : azbn.mdl('bconfig').puppeteer.user_agent,
+			// 'content-type': 'application/x-www-form-urlencoded' // Is set automatically
+		},
+	});
+
+	const cheerio = require('cheerio');
 	
 	if(azbn.mdl('bconfig').puppeteer.debug.save_trace) {
 		await page.tracing.start({
@@ -77,7 +95,7 @@ module.exports = async function(browser, page, azbn, app, argv) {
 		
 	}
 
-	const links = await page.evaluate(resultsSelector => {
+	let links = await page.evaluate(resultsSelector => {
 		let result = [];
 		const anchors = Array.from(document.querySelectorAll(resultsSelector));
 		for(let i = 0; i < anchors.length; i++) {
@@ -92,7 +110,78 @@ module.exports = async function(browser, page, azbn, app, argv) {
 		return result;
 	}, selector__links);
 	
-	app.saveJSON('crawler/results/' + argv.sc + '_' + argv.query, links);
+	if(links.length) {
+		for(let i = 0; i < links.length; i++) {
+			let p = links[i];
+
+			if(!(/^\/\//.test(p.href))) {
+				console.log(p.href);
+				rpn({
+					method : 'GET',
+					uri : p.href,
+					//transform2xxOnly : true,
+					transform : function(body, response, resolveWithFullResponse) {
+						
+						// /^2/.test('' + response.statusCode)
+						
+						if(/application\/json/.test(response.headers['content-type'])) {
+							
+							//console.log('json');
+							
+							return JSON.parse(body);
+							
+						} else if(/text\/html/.test(response.headers['content-type'])) {
+							
+							//console.log('html');
+							
+							if(/^2/.test('' + response.statusCode)) {
+								
+							}
+							
+							return cheerio.load(body, {
+								normalizeWhitespace : true,
+								decodeEntities : false,
+								//xmlMode : true,
+								//withDomLvl1: true,
+							});
+							
+						} else {
+							
+							//console.log(response.headers['content-type']);
+							
+							return body;
+							
+						}
+						
+					},
+				})
+				.then(function($) {
+					
+					if(typeof $ == 'function') {
+						
+						var _html = $.html();
+						
+						links[i]['phone'] = _html.match(/([\+\-\s\(\)0-9]){7,}/ig);
+						links[i]['email'] = _html.match(/([a-z0-9_\.\+-]+)@([a-z0-9_\.-]+)\.([a-z\.]{2,6})/ig);
+
+						app.saveJSON('crawler/results/' + argv.sc + '_' + argv.query, links);
+
+					}
+					
+				})
+				.catch(function(err) {
+					
+					//console.log(err);
+					
+				})
+				;
+
+			}
+
+		}
+	}
+
+	//app.saveJSON('crawler/results/' + argv.sc + '_' + argv.query, links);
 	
 	chalk.red('result saved');
 
