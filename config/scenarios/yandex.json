@@ -6,8 +6,11 @@
 		"launch" : {
 			"headless" : false,
 			"ignoreHTTPSErrors" : true,
-			"args" : [
-				
+			"__args" : [
+				"--proxy-server=127.0.0.1:9876",
+				"--window-size=100%,100%",
+				"--window-position=0,0",
+				"--enable-speech-dispatcher"
 			],
 			"devtools" : false,
 			"__slowMo" : 192,
@@ -15,7 +18,7 @@
 			"__userDataDir" : ""
 		},
 		"browser" : {
-			"closeOnFinish" : true
+			"closeOnFinish" : false
 		},
 		"path" : {
 			"screenshots" : "data/screenshots",
@@ -27,7 +30,7 @@
 			"png" : false,
 			"pdf" : false
 		},
-		"user_agent" : "Yadnex Browser",
+		"user_agent" : "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 YaBrowser/18.2.0.284 Yowser/2.5 Safari/537.36",
 		"viewport" : {
 			"width" : 1366,
 			"height" : 768,
