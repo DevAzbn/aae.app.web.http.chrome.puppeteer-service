@@ -132,10 +132,10 @@ module.exports = async function(browser, page, azbn, app, argv) {
 						
 					}
 
-					let items_cont = '.content-wrapper-new .w-slider';
-					let items_selector = items_cont + ' .kompleks-slide';
+					let images_cont = '.content-wrapper-new .w-slider';
+					let images_selector = images_cont + ' .kompleks-slide';
 					
-					await page.waitForSelector(items_cont);
+					await page.waitForSelector(images_cont);
 
 					let images = await page.evaluate(resultsSelector => {
 				
@@ -166,11 +166,55 @@ module.exports = async function(browser, page, azbn, app, argv) {
 						
 						return result;
 		
-					}, items_selector);
+					}, images_selector);
+
+					items[j].slider = images;
+
+
+
+					let params_cont = '.section-wrap .feature5-row-wrap';
+					let params_selector = params_cont + ' .feature5-item-wrap';
+
+					await page.waitForSelector(params_cont);
+
+					let params = await page.evaluate(resultsSelector => {
+				
+						let result = {};
 		
-					app.saveJSON('crawler/results/' + argv.sc + '/' + step + '_' + j, images);
+						if(jQuery) {
+							(function($){
+		
+								var items = $(resultsSelector);
+		
+								if(items.length) {
+		
+									items.each(function(index){
+		
+										let item = $(this);
+
+										let k = item.find('.text-15').text().trim();
+										let v = item.find('.text-20').text().trim();
+
+										result[k] = v;
+		
+									});
+		
+								}
+		
+							})(jQuery);
+						}
+						
+						return result;
+		
+					}, params_selector);
+
+					items[j].params = params;
+		
+					//app.saveJSON('crawler/results/' + argv.sc + '/' + step + '_' + j, images);
 
 				}
+
+				app.saveJSON('crawler/results/' + argv.sc + '/' + step, items);
 
 			}
 
