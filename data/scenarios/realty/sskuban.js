@@ -107,6 +107,76 @@ module.exports = async function(browser, page, azbn, app, argv) {
 		}
 		break;
 
+		case 1 : {
+
+			let items = app.loadJSON('crawler/results/' + argv.sc + '/0');
+
+			if(items && items.length) {
+
+				for(let j in items) {
+
+					var item = items[j];
+
+					await page.goto(azbn.mdl('bconfig').site.path.root + item.href, {
+						//waitUntil : 'load',
+						waitUntil : 'domcontentloaded',
+					});
+					
+					if(azbn.mdl('bconfig').puppeteer.includes.scripts) {
+						
+						for(var i in azbn.mdl('bconfig').puppeteer.includes.scripts) {
+							
+							await page.mainFrame().addScriptTag(azbn.mdl('bconfig').puppeteer.includes.scripts[i]);
+							
+						}
+						
+					}
+
+					let items_cont = '.content-wrapper-new .w-slider';
+					let items_selector = items_cont + ' .kompleks-slide';
+					
+					await page.waitForSelector(items_cont);
+
+					let images = await page.evaluate(resultsSelector => {
+				
+						let result = [];
+		
+						if(jQuery) {
+							(function($){
+		
+								var items = $(resultsSelector);
+		
+								if(items.length) {
+		
+									items.each(function(index){
+		
+										let item = $(this);
+
+										let p = item.get(0).style.backgroundImage.match(/^url\("(.*)"\)$/);
+										let img = p && p[1] || '';
+
+										result.push(img);
+		
+									});
+		
+								}
+		
+							})(jQuery);
+						}
+						
+						return result;
+		
+					}, items_selector);
+		
+					app.saveJSON('crawler/results/' + argv.sc + '/' + step + '_' + j, images);
+
+				}
+
+			}
+
+		}
+		break;
+
 		default : {
 
 		}
