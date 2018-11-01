@@ -172,7 +172,46 @@ module.exports = async function(browser, page, azbn, app, argv) {
 
 
 
-					let params_cont = '.section-wrap .feature5-row-wrap';
+					let content_cont = '.content-wrapper-new .section-wrap';
+					let content_selector = content_cont + ' .content-text-wrap';
+
+					await page.waitForSelector(content_cont);
+
+					let content = await page.evaluate(resultsSelector => {
+				
+						let result = [];
+		
+						if(jQuery) {
+							(function($){
+		
+								var items = $(resultsSelector);
+		
+								if(items.length) {
+		
+									items.each(function(index){
+		
+										let item = $(this);
+
+										result.push(item.text().trim());
+		
+									});
+		
+								}
+		
+							})(jQuery);
+						}
+						
+						return result;
+		
+					}, content_selector);
+
+					items[j].content = content;
+
+
+
+
+
+					let params_cont = '.content-wrapper-new .section-wrap .feature5-row-wrap';
 					let params_selector = params_cont + ' .feature5-item-wrap';
 
 					await page.waitForSelector(params_cont);
