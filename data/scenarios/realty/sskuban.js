@@ -248,8 +248,185 @@ module.exports = async function(browser, page, azbn, app, argv) {
 					}, params_selector);
 
 					items[j].params = params;
+
+
+
+
+
+
+
+
+					let docs_cont = '.content-wrapper-new .rich-docs';
+					let docs_selector = docs_cont + ' a';
+
+					await page.waitForSelector(docs_cont);
+
+					let docs = await page.evaluate(resultsSelector => {
+				
+						let result = [];
 		
-					//app.saveJSON('crawler/results/' + argv.sc + '/' + step + '_' + j, images);
+						if(jQuery) {
+							(function($){
+		
+								var items = $(resultsSelector);
+		
+								if(items.length) {
+		
+									items.each(function(index){
+		
+										let item = $(this);
+
+										result.push({
+											href : item.attr('href') || '',
+											title : item.text().trim(),
+										});
+		
+									});
+		
+								}
+		
+							})(jQuery);
+						}
+						
+						return result;
+		
+					}, docs_selector);
+
+					items[j].docs = docs;
+
+
+
+
+
+
+
+
+
+
+
+					let plan_cont = '.content-wrapper-new #planirovki_fontany.section-wrap';
+					let plan_selector = plan_cont + ' .w-tab-pane[data-w-tab] .room-all-wrapper .w-dyn-item a';
+
+					await page.waitForSelector(plan_cont);
+
+					let plans = await page.evaluate(resultsSelector => {
+				
+						let result = [];
+		
+						if(jQuery) {
+							(function($){
+		
+								var items = $(resultsSelector);
+		
+								if(items.length) {
+		
+									items.each(function(index){
+		
+										let item = $(this);
+										let cont = item.closest('.w-tab-pane[data-w-tab]');
+
+										let info = item.find('.room-opis-wrapper');
+
+										result.push({
+											href : item.attr('href') || null,
+											title : info.find('.kv-price-k').text().trim(),
+											area : info.find('.kv-prce .h-card-etap').text().trim(),
+											cat : cont.attr('data-w-tab') || 0,
+										});
+		
+									});
+		
+								}
+		
+							})(jQuery);
+						}
+						
+						return result;
+		
+					}, plan_selector);
+
+					items[j].plans = plans;
+
+
+
+				}
+
+				app.saveJSON('crawler/results/' + argv.sc + '/' + step, items);
+
+			}
+
+		}
+		break;
+
+		case 2 : {
+
+			let items = app.loadJSON('crawler/results/' + argv.sc + '/1');
+
+			if(items && items.length) {
+
+				for(let j in items) {
+
+					var item = items[j];
+
+					if(item.plans && item.plans.length) {
+
+						for(var pi = 0; pi < item.plans.length; pi++) {
+
+							var plan = item.plans[pi];
+
+							await page.goto(azbn.mdl('bconfig').site.path.root + plan.href, {
+								//waitUntil : 'load',
+								waitUntil : 'domcontentloaded',
+							});
+							
+							if(azbn.mdl('bconfig').puppeteer.includes.scripts) {
+								
+								for(var i in azbn.mdl('bconfig').puppeteer.includes.scripts) {
+									
+									await page.mainFrame().addScriptTag(azbn.mdl('bconfig').puppeteer.includes.scripts[i]);
+									
+								}
+								
+							}
+
+							let image_cont = '.content-wrapper-new div .wrap';
+							let image_selector = image_cont + ' img.image-159:nth-child(1)';
+							
+							await page.waitForSelector(image_cont);
+
+							let image = await page.evaluate(resultsSelector => {
+						
+								let result = null;
+				
+								if(jQuery) {
+									(function($){
+				
+										var items = $(resultsSelector);
+				
+										if(items.length) {
+				
+											items.each(function(index){
+				
+												let item = $(this);
+
+												result = item.attr('src') || null;;
+				
+											});
+				
+										}
+				
+									})(jQuery);
+								}
+								
+								return result;
+				
+							}, image_selector);
+
+							item.plans[pi].img = image;
+
+						}
+
+					}
 
 				}
 
