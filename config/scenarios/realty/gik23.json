@@ -1,0 +1,64 @@
+{
+	"puppeteer" : {
+		"debug" : {
+			"save_trace" : false
+		},
+		"launch" : {
+			"headless" : false,
+			"ignoreHTTPSErrors" : true,
+			"__args" : [
+				"--proxy-server=127.0.0.1:9876",
+				"--window-size=100%,100%",
+				"--window-position=0,0",
+				"--enable-speech-dispatcher"
+			],
+			"devtools" : false,
+			"__slowMo" : 192,
+			"__executablePath" : "C:\\Users\\azbn\\AppData\\Local\\Yandex\\YandexBrowser\\Application\\browser.exe",
+			"__userDataDir" : ""
+		},
+		"browser" : {
+			"closeOnFinish" : true
+		},
+		"path" : {
+			"screenshots" : "data/screenshots",
+			"traces" : "data/traces",
+			"inject_scripts" : "data/inject_scripts",
+			"scenarios" : "data/scenarios"
+		},
+		"make_screenshots" : {
+			"png" : false,
+			"pdf" : false
+		},
+		"user_agent" : "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 YaBrowser/18.2.0.284 Yowser/2.5 Safari/537.36",
+		"viewport" : {
+			"width" : 1366,
+			"height" : 768,
+			"deviceScaleFactor" : 1,
+			"isMobile" : false,
+			"hasTouch" : false,
+			"isLandscape" : true
+		},
+		"includes" : {
+			"styles" : {
+				
+			},
+			"scripts" : {
+				"jquery" : {
+					"url" : "https://yastatic.net/jquery/3.3.1/jquery.min.js"
+				},
+				"jquery_console_log" : {
+					"path" : "data/inject_scripts/test/jquery_console_log.js"
+				}
+			}
+		}
+	},
+	"site" : {
+		"path" : {
+			"root" : "https://gik23.ru"
+		},
+		"steps" : {
+
+		}
+	}
+}
